@@ -239,7 +239,7 @@ func uuid() (string, error) {
 func (packet *Packet) JSON() ([]byte, error) {
 	packetJSON, err := json.Marshal(packet)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to marshal packet: %s", err)
 	}
 
 	interfaces := make(map[string]Interface, len(packet.Interfaces))
@@ -252,7 +252,7 @@ func (packet *Packet) JSON() ([]byte, error) {
 	if len(interfaces) > 0 {
 		interfaceJSON, err := json.Marshal(interfaces)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("failed to marshal interfaces: %s", err)
 		}
 		packetJSON[len(packetJSON)-1] = ','
 		packetJSON = append(packetJSON, interfaceJSON[1:]...)
