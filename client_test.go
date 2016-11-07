@@ -35,7 +35,11 @@ func TestPacketJSON(t *testing.T) {
 	packet.AddTags(map[string]string{"baz": "buzz"})
 
 	expected := `{"message":"test","event_id":"2","project":"1","timestamp":"2000-01-01T00:00:00.00","level":"error","logger":"com.getsentry.raven-go.logger-test-packet-json","platform":"linux","culprit":"caused_by","server_name":"host1","release":"721e41770371db95eee98ca2707686226b993eda","environment":"production","tags":[["foo","bar"],["foo","foo"],["baz","buzz"]],"modules":{"foo":"bar"},"fingerprint":["{{ default }}","a-custom-fingerprint"],"logentry":{"message":"foo"}}`
-	actual := string(packet.JSON())
+	packageJSON, err := packet.JSON()
+	if err != nil {
+		t.Errorf("unexpecte error; got json marshaling error: %s", err)
+	}
+	actual := string(packageJSON)
 
 	if actual != expected {
 		t.Errorf("incorrect json; got %s, want %s", actual, expected)
@@ -62,7 +66,11 @@ func TestPacketJSONNilInterface(t *testing.T) {
 	}
 
 	expected := `{"message":"test","event_id":"2","project":"1","timestamp":"2000-01-01T00:00:00.00","level":"error","logger":"com.getsentry.raven-go.logger-test-packet-json","platform":"linux","culprit":"caused_by","server_name":"host1","release":"721e41770371db95eee98ca2707686226b993eda","environment":"production","tags":[["foo","bar"]],"modules":{"foo":"bar"},"fingerprint":["{{ default }}","a-custom-fingerprint"],"logentry":{"message":"foo"}}`
-	actual := string(packet.JSON())
+	packageJSON, err := packet.JSON()
+	if err != nil {
+		t.Errorf("unexpecte error; got json marshaling error: %s", err)
+	}
+	actual := string(packageJSON)
 
 	if actual != expected {
 		t.Errorf("incorrect json; got %s, want %s", actual, expected)
@@ -83,7 +91,7 @@ func TestPacketInit(t *testing.T) {
 		t.Errorf("ServerName should not be empty")
 	}
 	if packet.Level != ERROR {
-		t.Errorf("incorrect Level: got %d, want %d", packet.Level, ERROR)
+		t.Errorf("incorrect Level: got %v, want %s", packet.Level, ERROR)
 	}
 	if packet.Logger != "root" {
 		t.Errorf("incorrect Logger: got %s, want %s", packet.Logger, "root")
@@ -175,6 +183,6 @@ func TestUnmarshalTimestamp(t *testing.T) {
 	}
 
 	if actual != expected {
-		t.Errorf("incorrect string; got %s, want %s", actual, expected)
+		t.Errorf("incorrect string; got %v, want %v", actual, expected)
 	}
 }
